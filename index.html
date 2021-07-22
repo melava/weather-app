@@ -10,8 +10,28 @@
     </head>
     <body>
         <h1>What's the weather today ?</h1>
-        <p>Here in Liège...</p>
-        <p id="weather-info"></p>
+        <form action="#" method="post">
+            <label for="city">What place do you want to know the weather from?</label>
+            <input type="text" name="city" id="city">
+            <input type="submit" value="Go">
+        </form>
+        <div id="location-info">
+            <h2 id="location"></h2>
+            <p id="coordinates" class="strong"></p>
+            <p id="time"></p>
+        </div>
+        <div id="weather-info">
+            <p id="weather-description"></p>
+            <p id="temperature"></p>
+            <p id="clouds"></p>
+            <p id="humidity"></p>
+            <div id="wind">
+                <p id="wind-speed"></p>
+                <p id="wind-dir"></p>
+                <div id="arrow"><img id="arrow-img" src="assets/arrow.png" alt="wind direction"></div>
+            </div>
+        </div>
+
         
         <script src="script.js" async defer></script>
     </body>

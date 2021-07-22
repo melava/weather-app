@@ -1,25 +1,54 @@
-window.onload = async () => {
-    let data = await callOW('Liège')
-    let transformedData = transform(data);
-    displayData(transformedData);
+window.onload = getWeather('Liège')
+document.forms[0].addEventListener('submit', handleSubmit)
+
+function handleSubmit(e) {
+    e.preventDefault(); 
+    let city = document.forms[0].elements[0].value;
+    if (city) {
+        getWeather(city);
+        document.forms[0].elements[0].value = '';
+    }
+}
+
+async function getWeather(place) {
+    let data = await callOW(place);
+    if (typeof data === 'object'){
+        let transformedData = transform(data);
+        displayData(transformedData);
+        setTimeout(changeTime, transformedData.ping)
+    } else if (typeof data === 'string'){
+        console.log(data)
+    }
 }
 
 async function callOW (place) {
-    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${place}&units=metric&appid=4c7c517ec895981f34d075c475fc1952`, {mode: 'cors'})
-    const OWData = response.json();
-    return OWData
+    try {
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${place}&units=metric&appid=4c7c517ec895981f34d075c475fc1952`, {mode: 'cors'})
+        const OWData = await response.json();
+        // console.log(OWData)
+        if(OWData.cod !== 200) {
+            return OWData.message
+        } else {
+            return OWData
+        }
+    } catch (error) {  
+        console.log(error)
+    }
 }
 
 function transform(dataObject) {
-    const coord = coordinates(dataObject.coord.lat, dataObject.coord.lon);
-    const cardinalWindDir = cardinalify(dataObject.wind.deg);
-    const weatherDescription = objectifyArray(dataObject.weather);
-
-    const finalDataObject = {
+    const coord = getCompleteCoordinates(dataObject.coord.lat, dataObject.coord.lon);
+    const cardinalWindDir = getCardinalDirection(dataObject.wind.deg);
+    const weatherDescription = getWeatherObject(dataObject.weather);
+    const time = getLocationTime(dataObject.timezone).timeDisplay;
+    const ping = getLocationTime(dataObject.timezone).delayBeforeNextMin * 1000;
+    
+    let finalDataObject = {
         location: {
             name: dataObject.name,
             country: dataObject.sys.country,
             coordinates: coord,
+            callTime: time,
         },
         temperature: {
             current: dataObject.main.temp + '°C',
@@ -28,30 +57,25 @@ function transform(dataObject) {
         },
         wind: {
             speed: dataObject.wind.speed + ' m/s',
-            direction: cardinalWindDir,
+            direction: dataObject.wind.deg,
+            cardinal: cardinalWindDir,
         },
         clouds: dataObject.clouds.all + '%',
         humidity: dataObject.main.humidity + '%', 
         weather: weatherDescription,
+        ping: ping,
     }
     
     return finalDataObject
 }
 
-function displayData(dataObject) {
-    console.log(dataObject)
-    const contentDiv = document.getElementById('weather-info');
-    contentDiv.textContent = dataObject.weather.description
-
-}
-
-function coordinates (lat, lon) {
+function getCompleteCoordinates (lat, lon) {
     let NS;
     let WE;
     lat > 0 ? NS = 'N' : NS = 'S';
     lon > 0 ? WE = 'E' : WE = 'W';
     
-    function degreefy (coord) {
+    function convertToDegreeMinSec (coord) {
         let absoluteCoord = Math.abs(coord);
         let degree = Math.floor(absoluteCoord);
         let minuteDecimal = Math.round((Math.round((absoluteCoord - Math.floor(absoluteCoord)) * 10000) / 10000) * 60 * 10000) / 10000;
@@ -61,13 +85,13 @@ function coordinates (lat, lon) {
         return `${degree}° ${minute}' ${second}"`
     }
 
-    let DMSLat = degreefy(lat);
-    let DMSLon = degreefy(lon);
+    let DMSLat = convertToDegreeMinSec(lat);
+    let DMSLon = convertToDegreeMinSec(lon);
 
-    return `${DMSLat} ${NS}, ${DMSLon} ${WE}`
+    return `${DMSLat} ${NS} - ${DMSLon} ${WE}`
 }
 
-function cardinalify(windDirection) {
+function getCardinalDirection(windDirection) {
     let fraction = Math.round(windDirection / 22.5);
     let cardinalDirection;
 
@@ -128,7 +152,7 @@ function cardinalify(windDirection) {
     return cardinalDirection
 }
 
-function objectifyArray (array) {
+function getWeatherObject (array) {
     let weather = { description: '', category: ''};
     array.forEach(element => {
         if(weather.description === '') {
@@ -143,4 +167,66 @@ function objectifyArray (array) {
         }
     });
     return weather
+}
+
+function getLocationTime (timezone) {
+    const UTCDate = new Date();
+    const UTCTimeMs = UTCDate.getTime();
+    const cityOffset = timezone * 1000;
+    const currentAskedLocationDate = new Date(UTCTimeMs + cityOffset);
+    const timeDisplay = `${currentAskedLocationDate.getUTCHours()}:${currentAskedLocationDate.getUTCMinutes()}`;
+    const delayBeforeNextMin = 60 - currentAskedLocationDate.getUTCSeconds();
+    
+    return {timeDisplay, delayBeforeNextMin}
+}
+
+function displayData(dataObject) {
+    console.log(dataObject)
+
+    const location = document.getElementById('location');
+    location.textContent = `Here in ${dataObject.location.name} (${dataObject.location.country})`;
+    
+    const coordinates = document.getElementById('coordinates');
+    coordinates.textContent = `${dataObject.location.coordinates}`;
+    
+    const time = document.getElementById('time');
+    time.textContent = `${dataObject.location.callTime}`;  
+    
+    const weatherDescription = document.getElementById('weather-description');
+    weatherDescription.textContent = `${dataObject.weather.description}`;
+
+    const temperature = document.getElementById('temperature');
+    temperature.textContent = `Temperature: ${dataObject.temperature.current}`;
+
+    const clouds = document.getElementById('clouds');
+    clouds.textContent = `Cloud coverage: ${dataObject.clouds}`;
+
+    const humidity = document.getElementById('humidity');
+    humidity.textContent = `Humidity: ${dataObject.humidity}`;
+
+    const wind = document.getElementById('wind-speed');
+    wind.textContent = `Wind speed: ${dataObject.wind.speed}`;
+
+    const windDirection = document.getElementById('wind-dir');
+    windDirection.textContent = `Wind direction: ${dataObject.wind.cardinal}`;
+    
+    const windArrow = document.getElementById('arrow-img');
+    windArrow.style.transform = `rotate(${dataObject.wind.direction}deg)`;
+}
+
+function changeTime() {
+    let hour = Number(time.textContent.split(':')[0])
+    let min = Number(time.textContent.split(':')[1])
+    if (min === 59) {
+        min = 0;
+        if (hour === 23) {
+            hour = 0
+        } else {
+            hour += 1;
+        }
+    } else {
+        min += 1;
+    }
+    time.textContent = `${hour}:${min}`;
+    setTimeout(changeTime, 60 * 1000)
 }
