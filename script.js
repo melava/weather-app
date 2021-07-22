@@ -5,17 +5,20 @@ function handleSubmit(e) {
     e.preventDefault(); 
     let city = document.forms[0].elements[0].value;
     if (city) {
-        getWeather(city);
+        getWeather(city, 0);
         document.forms[0].elements[0].value = '';
     }
 }
 
-async function getWeather(place) {
+async function getWeather(place, clear) {
     let data = await callOW(place);
     if (typeof data === 'object'){
         let transformedData = transform(data);
         displayData(transformedData);
-        setTimeout(changeTime, transformedData.ping)
+        let myTimeOut = setTimeout(changeTime, transformedData.ping)
+        if (clear === 0) {
+            clearTimeout(myTimeOut)
+        }
     } else if (typeof data === 'string'){
         console.log(data)
     }
@@ -174,9 +177,16 @@ function getLocationTime (timezone) {
     const UTCTimeMs = UTCDate.getTime();
     const cityOffset = timezone * 1000;
     const currentAskedLocationDate = new Date(UTCTimeMs + cityOffset);
-    const timeDisplay = `${currentAskedLocationDate.getUTCHours()}:${currentAskedLocationDate.getUTCMinutes()}`;
+    let UTCHours = currentAskedLocationDate.getUTCHours();
+    if (UTCHours < 10) {
+        UTCHours = `0${UTCHours}`
+    }
+    let UTCMin = currentAskedLocationDate.getUTCMinutes();
+    if (UTCMin < 10) {
+        UTCMin = `0${UTCMin}`
+    }
+    const timeDisplay = `${UTCHours}:${UTCMin}`;
     const delayBeforeNextMin = 60 - currentAskedLocationDate.getUTCSeconds();
-    
     return {timeDisplay, delayBeforeNextMin}
 }
 
@@ -218,14 +228,21 @@ function changeTime() {
     let hour = Number(time.textContent.split(':')[0])
     let min = Number(time.textContent.split(':')[1])
     if (min === 59) {
-        min = 0;
+        min = '00';
         if (hour === 23) {
-            hour = 0
+            hour = '00'
         } else {
             hour += 1;
         }
     } else {
         min += 1;
+    }
+
+    if (hour < 10) {
+        hour = `0${hour}`
+    }
+    if (min < 10) {
+        min = `0${min}`
     }
     time.textContent = `${hour}:${min}`;
     setTimeout(changeTime, 60 * 1000)
