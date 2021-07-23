@@ -15,6 +15,7 @@ async function getWeather(place, clear) {
     if (typeof data === 'object'){
         let transformedData = transform(data);
         displayData(transformedData);
+        backgroundImgChange(transformedData);
         let myTimeOut = setTimeout(changeTime, transformedData.ping)
         if (clear === 0) {
             clearTimeout(myTimeOut)
@@ -224,13 +225,60 @@ function displayData(dataObject) {
     windArrow.style.transform = `rotate(${dataObject.wind.direction}deg)`;
 }
 
+function backgroundImgChange(dataObject) {
+    let mainCategory = dataObject.weather.category.split(',')[0].toLowerCase();
+
+    let cloudCoverage = Number(dataObject.clouds.replace('%', ''));
+    let cloudStyle;
+    if (cloudCoverage <= 10) {
+        cloudStyle = 'cloud0'
+    } else if (cloudCoverage < 25) {
+        cloudStyle = 'clouds1'
+    } else if (cloudCoverage <= 50) {
+        cloudStyle = 'clouds2'
+    } else if (cloudCoverage < 85) {
+        cloudStyle = 'clouds3'
+    } else if (cloudCoverage >= 85) {
+        cloudStyle = 'clouds4'
+    }
+    
+    switch (mainCategory) {
+        case 'clear':
+        case 'rain':
+        case 'drizzle':
+        case 'thunderstorm':
+        case 'snow':
+        case 'squall':
+        case 'tornado':
+            document.body.style.backgroundImage = `url('assets/weather-img/${mainCategory}.jpg')`;
+            break;
+    
+        case 'clouds':
+            document.body.style.backgroundImage = `url('assets/weather-img/${cloudStyle}.jpg')`;
+            break;
+                
+        case 'mist':
+        case 'fog':
+        case 'haze':
+        case 'smoke':
+        case 'dust':
+        case 'sand':
+        case 'ash':
+            document.body.style.backgroundImage = `url('assets/weather-img/mist.jpg')`;
+            break;
+
+        default:
+            break;
+    }
+}
+
 function changeTime() {
     let hour = Number(time.textContent.split(':')[0])
     let min = Number(time.textContent.split(':')[1])
     if (min === 59) {
-        min = '00';
+        min = '0';
         if (hour === 23) {
-            hour = '00'
+            hour = '0'
         } else {
             hour += 1;
         }
