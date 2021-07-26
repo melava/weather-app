@@ -6,29 +6,31 @@
         <title>My weather App</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css2?family=Bubbler+One&display=swap" rel="stylesheet"> 
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <!-- <h1>What's the weather today ?</h1> -->
         <form action="#" method="post">
             <input type="text" name="city" id="city" placeholder="Search location">
             <input type="submit" value="Go">
         </form>
         <div id="info">
-            <div id="location-info">
-                <h2 id="location"></h2>
-                <p id="coordinates" class="strong"></p>
+            <div id="left-info">
+                <div id="place">
+                    <h2 id="location"></h2>
+                    <p id="coordinates"></p>
+                </div>
+                <p id="weather-description"></p>
                 <p id="time"></p>
             </div>
-            <div id="weather-info">
-                <p id="weather-description"></p>
+            <div id="right-info">
                 <p id="temperature"></p>
                 <p id="clouds"></p>
                 <p id="humidity"></p>
                 <div id="wind">
-                    <p id="wind-speed"></p>
-                    <p id="wind-dir"></p>
                     <div id="arrow"><img id="arrow-img" src="assets/arrow.png" alt="wind direction"></div>
+                    <p id="wind-dir"></p>
+                    <p id="wind-speed"></p>
                 </div>
             </div>
         </div>
