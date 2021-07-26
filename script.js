@@ -128,25 +128,25 @@ function getCardinalDirection(windDirection) {
             cardinalDirection = 'S'
             break;
         case 9:
-            cardinalDirection = 'SSO'
+            cardinalDirection = 'SSW'
             break;
         case 10:
-            cardinalDirection = 'SO'
+            cardinalDirection = 'SW'
             break;
         case 11:
-            cardinalDirection = 'OSO'
+            cardinalDirection = 'WSW'
             break;
         case 12:
-            cardinalDirection = 'O'
+            cardinalDirection = 'W'
             break;
         case 13:
-            cardinalDirection = 'ONO'
+            cardinalDirection = 'WNW'
             break;
         case 14:
-            cardinalDirection = 'NO'
+            cardinalDirection = 'NW'
             break;
         case 15:
-            cardinalDirection = 'NNO'
+            cardinalDirection = 'NNW'
             break;
         case 16:
             cardinalDirection = 'N'
@@ -207,19 +207,19 @@ function displayData(dataObject) {
     weatherDescription.textContent = `${dataObject.weather.description}`;
 
     const temperature = document.getElementById('temperature');
-    temperature.textContent = `Temperature: ${dataObject.temperature.current}`;
+    temperature.textContent = `${dataObject.temperature.current}`;
 
     const clouds = document.getElementById('clouds');
-    clouds.textContent = `Cloud coverage: ${dataObject.clouds}`;
+    clouds.textContent = `${dataObject.clouds} cloud coverage`;
 
     const humidity = document.getElementById('humidity');
-    humidity.textContent = `Humidity: ${dataObject.humidity}`;
+    humidity.textContent = `${dataObject.humidity} humidity`;
 
     const wind = document.getElementById('wind-speed');
-    wind.textContent = `Wind speed: ${dataObject.wind.speed}`;
+    wind.textContent = ` ${dataObject.wind.speed} speed`;
 
     const windDirection = document.getElementById('wind-dir');
-    windDirection.textContent = `Wind direction: ${dataObject.wind.cardinal}`;
+    windDirection.textContent = `${dataObject.wind.cardinal} wind:`;
     
     const windArrow = document.getElementById('arrow-img');
     windArrow.style.transform = `rotate(${dataObject.wind.direction}deg)`;
