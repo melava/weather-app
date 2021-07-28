@@ -1,5 +1,7 @@
-window.onload = getWeather('Liège')
-document.forms[0].addEventListener('submit', handleSubmit)
+window.onload = getWeather('Liège');
+document.forms[0].addEventListener('submit', handleSubmit);
+const degree = document.getElementById('degree');
+degree.addEventListener('click', changeDegree);
 
 function handleSubmit(e) {
     e.preventDefault(); 
@@ -195,7 +197,7 @@ function displayData(dataObject) {
     console.log(dataObject)
 
     const location = document.getElementById('location');
-    location.textContent = `Here in ${dataObject.location.name} (${dataObject.location.country})`;
+    location.textContent = `${dataObject.location.name} (${dataObject.location.country})`;
     
     const coordinates = document.getElementById('coordinates');
     coordinates.textContent = `${dataObject.location.coordinates}`;
@@ -206,7 +208,7 @@ function displayData(dataObject) {
     const weatherDescription = document.getElementById('weather-description');
     weatherDescription.textContent = `${dataObject.weather.description}`;
 
-    const temperature = document.getElementById('temperature');
+    const temperature = document.getElementById('current-temperature');
     temperature.textContent = `${dataObject.temperature.current}`;
 
     const clouds = document.getElementById('clouds');
@@ -294,4 +296,21 @@ function changeTime() {
     }
     time.textContent = `${hour}:${min}`;
     setTimeout(changeTime, 60 * 1000)
+}
+
+function changeDegree(e) {
+    let button = e.target;
+    const tempDiv = document.getElementById('current-temperature')
+    let temperature = Number(tempDiv.textContent.split('°')[0]);
+
+    if (button.className.includes('celsius')) {
+        let farenheit = (temperature * 9/5) + 32;
+        tempDiv.textContent = `${farenheit}°F`;
+        button.textContent = 'to °C';
+    } else {
+        let celsius = (temperature - 32) * 5/9;
+        tempDiv.textContent = `${celsius}°C`;
+        button.textContent = 'to °F';
+    }
+    button.classList.toggle('celsius');
 }
