@@ -1,8 +1,9 @@
 window.onload = getWeather('Liège');
 document.forms[0].addEventListener('submit', handleSubmit);
 const error = document.getElementById('error');
+const tempDiv = document.getElementById('current-temperature')
 const degree = document.getElementById('degree');
-degree.addEventListener('click', changeDegree);
+degree.addEventListener('click', convertDegree);
 
 function handleSubmit(e) {
     e.preventDefault(); 
@@ -19,6 +20,10 @@ async function getWeather(place, clear) {
         error.classList.add('hidden');
         let transformedData = transform(data);
         displayData(transformedData);
+        if (!degree.className.includes('celsius')) {
+            degree.classList.add('celsius');
+            convertDegree()
+        }
         backgroundImgChange(transformedData);
         let myTimeOut = setTimeout(changeTime, transformedData.ping)
         if (clear === 0) {
@@ -299,19 +304,17 @@ function changeTime() {
     setTimeout(changeTime, 60 * 1000)
 }
 
-function changeDegree(e) {
-    let button = e.target;
-    const tempDiv = document.getElementById('current-temperature')
+function convertDegree() {
     let temperature = Number(tempDiv.textContent.split('°')[0]);
 
-    if (button.className.includes('celsius')) {
-        let farenheit = (temperature * 9/5) + 32;
+    if (degree.className.includes('celsius')) {
+        let farenheit = Math.round(((temperature * 9/5) + 32) * 100) / 100;
         tempDiv.textContent = `${farenheit}°F`;
-        button.textContent = 'to °C';
+        degree.textContent = 'to °C';
     } else {
-        let celsius = (temperature - 32) * 5/9;
+        let celsius = Math.round(((temperature - 32) * 5/9) * 100) / 100;
         tempDiv.textContent = `${celsius}°C`;
-        button.textContent = 'to °F';
+        degree.textContent = 'to °F';
     }
-    button.classList.toggle('celsius');
+    degree.classList.toggle('celsius');
 }
