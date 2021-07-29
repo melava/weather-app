@@ -1,15 +1,23 @@
-window.onload = getWeather('Liège');
-document.forms[0].addEventListener('submit', handleSubmit);
+const loader = document.getElementById('loader');
 const error = document.getElementById('error');
 const tempDiv = document.getElementById('current-temperature')
 const degree = document.getElementById('degree');
+
+window.onload = loading('Liège');
+document.forms[0].addEventListener('submit', handleSubmit);
 degree.addEventListener('click', convertDegree);
+
+function loading(city, clear) {
+    getWeather(city, clear);
+    setTimeout(() => {loader.classList.add('hidden')}, 750);
+}
 
 function handleSubmit(e) {
     e.preventDefault(); 
+    loader.classList.remove('hidden');
     let city = document.forms[0].elements[0].value;
     if (city) {
-        getWeather(city, 0);
+        loading(city, 0);
         document.forms[0].elements[0].value = '';
     }
 }
