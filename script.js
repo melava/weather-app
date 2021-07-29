@@ -1,5 +1,6 @@
 window.onload = getWeather('Liège');
 document.forms[0].addEventListener('submit', handleSubmit);
+const error = document.getElementById('error');
 const degree = document.getElementById('degree');
 degree.addEventListener('click', changeDegree);
 
@@ -15,6 +16,7 @@ function handleSubmit(e) {
 async function getWeather(place, clear) {
     let data = await callOW(place);
     if (typeof data === 'object'){
+        error.classList.add('hidden');
         let transformedData = transform(data);
         displayData(transformedData);
         backgroundImgChange(transformedData);
@@ -23,7 +25,8 @@ async function getWeather(place, clear) {
             clearTimeout(myTimeOut)
         }
     } else if (typeof data === 'string'){
-        console.log(data)
+        error.classList.remove('hidden');
+        error.textContent = data;
     }
 }
 
@@ -31,7 +34,6 @@ async function callOW (place) {
     try {
         const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${place}&units=metric&appid=4c7c517ec895981f34d075c475fc1952`, {mode: 'cors'})
         const OWData = await response.json();
-        // console.log(OWData)
         if(OWData.cod !== 200) {
             return OWData.message
         } else {
@@ -194,8 +196,7 @@ function getLocationTime (timezone) {
 }
 
 function displayData(dataObject) {
-    console.log(dataObject)
-
+    // console.log(dataObject)
     const location = document.getElementById('location');
     location.textContent = `${dataObject.location.name} (${dataObject.location.country})`;
     
