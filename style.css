@@ -199,12 +199,16 @@ input[type="submit"] {
 }
 
 @media (max-width: 720px) {
+    * {
+        font-size: 22px;
+    }
+
     body {
         grid-template-rows: 100px 1fr;
     }
     
     #info {
-        grid-template: 1fr 1fr / 90%;
+        grid-template: 1fr 1fr / 1fr;
         padding: 5px 20px;
     }
 
