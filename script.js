@@ -14,9 +14,9 @@ function loading(city, clear) {
 
 function handleSubmit(e) {
     e.preventDefault(); 
-    loader.classList.remove('hidden');
     let city = document.forms[0].elements[0].value;
     if (city) {
+        loader.classList.remove('hidden');
         loading(city, 0);
         document.forms[0].elements[0].value = '';
     }
