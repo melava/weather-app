@@ -197,3 +197,27 @@ input[type="submit"] {
 #arrow-img {
     max-width: 100%;
 }
+
+@media (max-width: 720px) {
+    body {
+        grid-template-rows: 1fr 3fr 1fr;
+    }
+    
+    #info {
+        grid-template: 1fr 1fr / 90%;
+        padding: 5px 50px;
+    }
+
+    #left-info, #right-info {
+        padding: 20px 0 !important;
+    }
+
+    #right-info {
+        border-left: none !important;
+        border-top: 1px solid rgba(10, 10, 10, 0.5);
+    }
+
+    #degree {
+        margin-right: 0;
+    }
+}
